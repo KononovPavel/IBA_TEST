@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./index.css">
+    <title>Records</title>
+
+<script defer src="./index_bundle.js"></script></head>
+<body>
+<div class="container">
+
+    <div class="modal" id="addModal">
+        <div class="table">
+            <div class="td">
+                <label>name:</label>
+                <input type="text" name="name" id="name">
+            </div>
+            <div class="td">
+                <label>data:</label>
+                <input type="date" name="data" id="data">
+            </div>
+            <div class="td">
+                <label>description:</label>
+                <input type="text" name="description" id="description">
+            </div>
+            <div>
+                <button class="searchButton" id="addUser">Добавить</button>
+                <button class="searchButton" id="closeAddModal">Закрыть</button>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="editModal">
+        <div class="table">
+            <div class="td">
+                <label>name:</label>
+                <input type="text" name="name" id="editName">
+            </div>
+            <div class="td">
+                <label>data:</label>
+                <input type="date" name="data" id="editData">
+            </div>
+            <div class="td">
+                <label>description:</label>
+                <input type="text" name="description" id="editDescription">
+            </div>
+            <div>
+                <button class="searchButton" id="editUser">изменить</button>
+                <button class="searchButton" id="closeEditModal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <div class="settings">
+            <div class="search">
+                <input type="text" id="searchInput">
+                <button class="searchButton" id="searchByName">search</button>
+            </div>
+            <div>
+                <button class="addUserButton" id="add">+</button>
+            </div>
+
+        </div>
+        <div class="list">
+            <table>
+                <thead>
+                <tr>
+                    <th id="sortName" class="sortName">name</th>
+                    <th id="sortDate" class="sortDate"> date</th>
+                    <th id="sortDescription" class="sortDescription">description</th>
+                    <th>actions</th>
+                </tr>
+                </thead>
+                <tbody class="data">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+
+    let content = []
+    let list = document.querySelector('.data')
+    let sortCounterByDate = 1;
+    let sortCounter = 1;
+    let sortCounterByDescription = 1;
+
+    function getHtmlMarkup(array) {
+        for (const key in array) {
+            list.innerHTML +=
+                `
+       <tr>
+                            <td>${array[key].Name}</td>
+                            <td>${array[key].Date}</td>
+                            <td>${array[key].Description}</td>
+                            <td>
+                                <img  onclick="return editRecordModal(${array[key].id})" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Edit_icon_%28the_Noun_Project_30184%29.svg/1024px-Edit_icon_%28the_Noun_Project_30184%29.svg.png" alt="delete" width="30px" height="30px"  id={array[key].id}  />
+
+                               <img  onclick="return deleteRecord(${array[key].id})" src="https://www.svgrepo.com/show/79440/delete-button.svg" alt="delete" width="30px" height="30px" id={array[key].id} />
+                            </td>
+                        </tr>
+`
+        }
+
+    }
+
+    //CRUD
+    async function getRecords() {
+        let response = await fetch('http://212.98.184.15:8080/users')
+        content = await response.json()
+        list.innerHTML = ''
+        getHtmlMarkup(content)
+    }
+
+    let currentId = 0;
+
+    function editRecordModal(id) {
+        document.getElementById("addModal").style.display = 'none'
+        document.getElementById('editModal').style.display = 'block'
+        let currentRecord = [...content].find(record => record.id === id)
+        document.getElementById('editName').value = currentRecord.Name;
+        document.getElementById('editData').value = currentRecord.Date;
+        document.getElementById('editDescription').value = currentRecord.Description;
+        currentId = id
+    }
+
+    async function editRecord() {
+        let record = {
+            Name: document.getElementById('editName').value,
+            Description: document.getElementById('editDescription').value,
+            Date: document.getElementById('editData').value,
+        }
+        await fetch('http://212.98.184.15:8080/edit/' + currentId, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(record)
+
+        }).then(() => getRecords());
+        document.getElementById("editModal").style.display = 'none'
+    }
+
+    async function deleteRecord(id) {
+        await fetch('http://212.98.184.15:8080/delete/' + id, {
+            method: 'DELETE',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(() => getRecords());
+    }
+
+    async function addRecord() {
+        let record = {
+            Name: document.getElementById('name').value,
+            Description: document.getElementById('description').value,
+            Date: document.getElementById('data').value
+        }
+        if (record.Name && record.Date) {
+            await fetch('http://212.98.184.15:8080/create', {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(record)
+            }).then(() => getRecords());
+            document.getElementById("addModal").style.display = 'none'
+        } else {
+            document.getElementById("addModal").style.display = 'block'
+        }
+
+    }
+
+
+    //handler
+    function openToAdd() {
+        document.getElementById("addModal").style.display = 'block'
+        document.getElementById('editModal').style.display = 'none'
+    }
+
+    function closeOpenModal() {
+        document.getElementById('addModal').style.display = 'none'
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none'
+    }
+
+    //search
+    async function searchByName() {
+        if (content.length !== 0) {
+            let currentList = document.querySelector('.data')
+            if (document.getElementById('searchInput').value.length === 0) {
+                await getRecords()
+            } else {
+                currentList.innerHTML = ''
+                let sortRecords = [...content].filter(record => record.Name.toLowerCase() === document.getElementById('searchInput').value.toLowerCase());
+                getHtmlMarkup(sortRecords)
+                document.getElementById('searchInput').value = ''
+            }
+        }
+
+    }
+
+    //sort
+    async function sortByName() {
+        sortCounter++;
+        if (sortCounter % 2 === 0) {
+            document.getElementById('sortName').style.color = 'red'
+            let currentList = document.querySelector('.data')
+            let currentRecords = [...content]
+            currentRecords = currentRecords.sort((a, b) => a.Name.toLowerCase() > b.Name.toLowerCase() ? 1 : -1)
+            currentList.innerHTML = ''
+            getHtmlMarkup(currentRecords)
+        } else {
+            document.getElementById('sortName').style.color = 'black'
+            await getRecords()
+        }
+    }
+
+    async function sortByDate() {
+        sortCounterByDate++;
+        if (sortCounterByDate % 2 === 0) {
+            document.getElementById('sortDate').style.color = 'red'
+            let currentList = document.querySelector('.data')
+            let currentRecords = [...content]
+            currentRecords = currentRecords.sort((a, b) => Number(a.Date.slice(0, 4)) < Number(b.Date.slice(0, 4)) ? 1 : -1)
+            currentList.innerHTML = ''
+            getHtmlMarkup(currentRecords)
+        } else {
+            document.getElementById('sortDate').style.color = 'black'
+            await getRecords()
+        }
+    }
+
+    async function sortByDescription() {
+        sortCounterByDescription++;
+        if (sortCounterByDescription % 2 === 0) {
+            document.getElementById('sortDescription').style.color = 'red'
+            let currentList = document.querySelector('.data')
+            let currentRecords = [...content]
+            currentRecords = currentRecords.sort((a, b) => a.Description.toLowerCase().length < b.Description.toLowerCase().length ? 1 : -1)
+            currentList.innerHTML = ''
+            getHtmlMarkup(currentRecords)
+        } else {
+            document.getElementById('sortDescription').style.color = 'black'
+            await getRecords()
+        }
+    }
+
+
+    //events
+    document.getElementById('add').addEventListener('click', openToAdd)
+    document.getElementById('sortName').addEventListener('click', sortByName)
+    document.getElementById('sortDate').addEventListener('click', sortByDate)
+    document.getElementById('sortDescription').addEventListener('click', sortByDescription)
+    document.getElementById('addUser').addEventListener('click', addRecord)
+    document.getElementById('editUser').addEventListener('click', editRecord)
+    document.getElementById('searchByName').addEventListener('click', searchByName)
+    document.getElementById('closeAddModal').addEventListener('click', closeOpenModal)
+    document.getElementById('closeEditModal').addEventListener('click', closeEditModal)
+    getRecords();
+
+
+</script>
+<script src="./index.js"></script>
+</body>
+</html>

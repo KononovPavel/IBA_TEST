@@ -1,0 +1,170 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/*========GLOBAL STYLES=======*/
+
+input {
+    width: 200px;
+    height: 30px;
+    outline: none;
+    font-size: 20px;
+    margin: 0;
+    padding: 0;
+}
+img{
+    cursor: pointer;
+}
+
+button {
+    margin: 0;
+    padding: 0;
+}
+
+span {
+    min-height: 50px;
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+}
+thead{
+    width: 100%;
+
+}
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th{
+    padding: 5px;
+    text-align: center;
+    border: 1px solid ;
+}
+td{
+    padding: 5px;
+    border: 1px solid ;
+    text-align: center;
+}
+
+
+
+
+/*========LOCAL STYLES=======*/
+.container {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.wrapper {
+    min-width: 400px;
+    min-height: 300px;
+    padding: 10px;
+    background-color: #e0dede;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.modal {
+    min-width: 400px;
+    height: 300px;
+    background: #b6b6b6;
+    display: none;
+}
+
+.settings {
+    width: 90%;
+    height: 100%;
+    margin: 20px auto auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list {
+    width: 100%;
+    min-height: 170px;
+    background: #d0cece;
+}
+
+
+.search {
+    width: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.searchButton {
+    height: 30px;
+    width: 70px;
+    cursor: pointer;
+
+}
+
+.addUserButton {
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    background: none;
+    border: 2px solid;
+    font-size: 19px;
+    cursor: pointer;
+}
+
+.table {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.td {
+    min-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.delete {
+    cursor: pointer;
+}
+
+.edit {
+    cursor: pointer;
+}
+
+.sortName {
+    cursor: pointer;
+}
+
+.sortName:hover {
+    color: #1d2d56;
+}
+
+.sortDate {
+    cursor: pointer;
+}
+
+.sortDate:hover {
+    color: #1d2d56;
+}
+
+.sortDescription {
+    cursor: pointer;
+}
+
+.sortDescription:hover {
+    color: #1d2d56;
+}
+
